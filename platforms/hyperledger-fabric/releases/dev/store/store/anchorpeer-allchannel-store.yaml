@@ -1,0 +1,48 @@
+apiVersion: flux.weave.works/v1beta1
+kind: HelmRelease
+metadata:
+  name: anchorpeer-allchannel-store
+  namespace: store-net
+  annotations:
+    flux.weave.works/automated: "false"
+spec:
+  releaseName: anchorpeer-allchannel-store
+  chart:
+    git: ssh://git@github.com/Param-ACN/blockchain-automation-framework.git
+    ref: develop
+    path: platforms/hyperledger-fabric/charts/anchorpeer
+  values:
+    metadata:
+      namespace: store-net
+      images:
+        fabrictools: hyperledger/fabric-tools:1.4.4
+        alpineutils: index.docker.io/hyperledgerlabs/alpine-utils:1.0
+
+    peer:
+      name: peer0
+      address: peer0.store-net.fab.cluster31.aws.bafevent.com:8443
+      localmspid: storeMSP
+      loglevel: debug
+      tlsstatus: true
+
+    vault:
+      role: vault-role
+      address: http://a06cfdd75c77e11ea9b010a5d49687c5-985557784.ap-south-1.elb.amazonaws.com:9000
+      authpath: store-net-auth
+      adminsecretprefix: secret/crypto/peerOrganizations/store-net/users/admin
+      orderersecretprefix: secret/crypto/peerOrganizations/store-net/orderer
+      serviceaccountname: vault-auth
+      imagesecretname: regcred
+
+    channel:
+      name: allchannel      
+    orderer:
+      address: orderer1.fab.cluster31.aws.bafevent.com:8443
+    anchorstx: |-
+      CrcCChAKDggCIgphbGxjaGFubmVsEqICCp8CCgphbGxjaGFubmVsElgSVgoLQXBwbGljYXRpb24S
+      RwgBEjsKCHN0b3JlTVNQEi8aBwoDTVNQEgAiCgoGQWRtaW5zEgAiCwoHUmVhZGVycxIAIgsKB1dy
+      aXRlcnMSACoGQWRtaW5zGrYBErMBCgtBcHBsaWNhdGlvbhKjAQgBEpYBCghzdG9yZU1TUBKJAQgB
+      GgcKA01TUBIAGk4KC0FuY2hvclBlZXJzEj8SNQozCi5wZWVyMC5zdG9yZS1uZXQuZmFiLmNsdXN0
+      ZXIzMS5hd3MuYmFmZXZlbnQuY29tEPtBGgZBZG1pbnMiCwoHUmVhZGVycxIAIgsKB1dyaXRlcnMS
+      ACIKCgZBZG1pbnMSACoGQWRtaW5zKgZBZG1pbnM=
+
